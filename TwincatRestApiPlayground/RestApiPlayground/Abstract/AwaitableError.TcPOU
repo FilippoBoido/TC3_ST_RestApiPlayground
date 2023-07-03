@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="AwaitableError" Id="{f013d3f3-35b1-42e4-9cd5-becbda020fda}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ABSTRACT AwaitableError IMPLEMENTS Callback
+VAR_INPUT
+	errorName: STRING;
+	errorMessage: STRING(255);
+	onErrorStep: UDINT := 0;
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="execute" Id="{625e57cf-8c9e-4b1e-9d42-9ab0ea12969b}">
+      <Declaration><![CDATA[(* This is method get's exectued by the framework when the callback is triggered.
+ It returns a step number which might be used together with Await to jump to a certain chain step
+ after the callback code has been executed.*)
+METHOD execute : UDINT
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[execute := onErrorStep;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="getMessage" Id="{e9dd875b-0c3c-42b2-a358-703b11eccf52}">
+      <Declaration><![CDATA[METHOD getMessage : String(255)
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[getMessage := errorMessage;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="getName" Id="{f5227696-795c-45c3-b511-c7a28392c6d7}">
+      <Declaration><![CDATA[METHOD getName : String
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[getName := errorName;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="AwaitableError">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="AwaitableError.execute">
+      <LineId Id="7" Count="0" />
+    </LineIds>
+    <LineIds Name="AwaitableError.getMessage">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="AwaitableError.getName">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

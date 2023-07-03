@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <Itf Name="Callable" Id="{e88c15c0-c2f3-4df0-aeff-6b1db87e104a}">
+    <Declaration><![CDATA[INTERFACE Callable
+]]></Declaration>
+    <Method Name="call" Id="{2fff1301-c33b-416e-8617-f1edcda4748a}">
+      <Declaration><![CDATA[METHOD call : Awaitable
+VAR_INPUT
+	callback: Callback;
+END_VAR
+]]></Declaration>
+    </Method>
+  </Itf>
+</TcPlcObject>

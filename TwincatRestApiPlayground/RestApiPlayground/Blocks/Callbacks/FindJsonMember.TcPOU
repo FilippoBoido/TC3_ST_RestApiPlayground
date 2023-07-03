@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FindJsonMember" Id="{f31b7faf-314c-45d4-9960-c055c68f91e9}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FINAL FindJsonMember IMPLEMENTS Callback
+VAR_INPUT
+	memberToFind: STRING;
+	jsonDomParser: REFERENCE TO FB_JsonDomParser;
+	jsonReference: REFERENCE TO SJsonValue;
+	memberReference: REFERENCE TO SJsonValue;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="execute" Id="{251b2f64-dc0e-43ca-b866-3276e4e297a6}">
+      <Declaration><![CDATA[
+(* This is method get's exectued by the framework when the callback is triggered.
+ It returns a step number which might be used together with Await to jump to a certain chain step
+ after the callback code has been executed.*)
+METHOD execute : UDINT
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[memberReference := jsonDomParser.FindMember(jsonReference, memberToFind);]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="FindJsonMember">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="FindJsonMember.execute">
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <Itf Name="Evaluable" Id="{5fdc8daf-5053-4b6d-a120-f929bb45a04c}">
+    <Declaration><![CDATA[INTERFACE Evaluable
+]]></Declaration>
+    <Method Name="evalue" Id="{ba9f3a6b-fa87-4866-871a-3fd79ff26bc8}">
+      <Declaration><![CDATA[METHOD evalue : Awaitable
+VAR_INPUT
+	value: BOOL;
+	onTrueCallback: Callback;
+	onFalseCallback: REFERENCE TO AwaitableError;
+	message: STRING(255);
+END_VAR]]></Declaration>
+    </Method>
+  </Itf>
+</TcPlcObject>

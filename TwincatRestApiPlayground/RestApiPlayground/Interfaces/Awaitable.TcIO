@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <Itf Name="Awaitable" Id="{6ab0156e-171d-4564-b90d-8e010883ecee}">
+    <Declaration><![CDATA[INTERFACE Awaitable EXTENDS Callable, Resettable, Evaluable
+]]></Declaration>
+    <Method Name="catchIf" Id="{1ae9d2b8-9fa4-47e8-aa05-c5a81386204e}">
+      <Declaration><![CDATA[METHOD catchIf : Awaitable
+VAR_INPUT
+	error: BOOL;
+	callback: REFERENCE TO AwaitableError;
+	message: STRING(255);
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="continueIf" Id="{31980aa7-791b-4a07-8e4a-b0531a456d11}">
+      <Declaration><![CDATA[METHOD continueIf : Awaitable
+VAR_INPUT
+	value: BOOL;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="evalue" Id="{eb343bfe-5422-49b0-86d4-b2b7caa0cbe6}">
+      <Declaration><![CDATA[METHOD evalue : Awaitable
+VAR_INPUT
+	value: BOOL;
+	onTrueCallback: Callback;
+	onFalseCallback: REFERENCE TO AwaitableError;
+	message: STRING(255);
+END_VAR
+
+]]></Declaration>
+    </Method>
+    <Method Name="raiseIf" Id="{c2921e7e-af76-4849-b647-f81cd5fec7a0}">
+      <Declaration><![CDATA[METHOD raiseIf : Awaitable
+VAR_INPUT
+	error: BOOL;
+	callback: REFERENCE TO AwaitableError;
+	message: STRING(255);
+END_VAR
+]]></Declaration>
+    </Method>
+  </Itf>
+</TcPlcObject>

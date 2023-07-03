@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="GetJsonString" Id="{4ec942fc-6682-4887-acc1-e732360b49f2}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FINAL GetJsonString IMPLEMENTS Callback
+VAR_INPUT
+	jsonDomParser: REFERENCE TO FB_JsonDomParser;
+	bufferReference: REFERENCE TO STRING(255);
+	memberReference: REFERENCE TO SJsonValue;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="execute" Id="{3a5a13c9-509b-4412-a403-b76d3ec08e6c}">
+      <Declaration><![CDATA[
+(* This is method get's exectued by the framework when the callback is triggered.
+ It returns a step number which might be used together with Await to jump to a certain chain step
+ after the callback code has been executed.*)
+METHOD execute : UDINT
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[bufferReference := jsonDomParser.GetString(memberReference);]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="GetJsonString">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="GetJsonString.execute">
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="IsJsonMemberString" Id="{cefea03f-a64a-48bf-8b03-1bc2207323cb}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FINAL IsJsonMemberString IMPLEMENTS Callback
+VAR_INPUT
+	jsonDomParser: REFERENCE TO FB_JsonDomParser;
+	memberReference: REFERENCE TO SJsonValue;
+	isStringReference: REFERENCE TO BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="execute" Id="{a929a389-e58e-4615-a817-a1eab03a5f46}">
+      <Declaration><![CDATA[(* This is method get's exectued by the framework when the callback is triggered.
+ It returns a step number which might be used together with Await to jump to a certain chain step
+ after the callback code has been executed.*)
+METHOD execute : UDINT
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[isStringReference := memberReference <> 0 AND_THEN jsonDomParser.IsString(memberReference);
+]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="IsJsonMemberString">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="IsJsonMemberString.execute">
+      <LineId Id="12" Count="0" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

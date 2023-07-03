@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <Itf Name="Callback" Id="{7a36e852-63f5-4890-a3a7-b5281ee647d7}">
+    <Declaration><![CDATA[INTERFACE Callback
+]]></Declaration>
+    <Method Name="execute" Id="{c9344fd3-d588-4c0d-bd17-31969dad6844}">
+      <Declaration><![CDATA[// This is method get's exectued by the framework when the callback is triggered.
+// It returns a step number which might be used together with Await to jump to a certain chain step
+// after the callback code has been executed.
+METHOD execute : UDINT
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+  </Itf>
+</TcPlcObject>

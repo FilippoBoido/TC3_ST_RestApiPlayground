@@ -1,0 +1,331 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="Await" Id="{16e3a70a-96d3-439c-843d-a8d9992b6297}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Await IMPLEMENTS Awaitable
+
+VAR_OUTPUT
+END_VAR
+VAR
+	step: POINTER TO UDINT;
+	oldStep: UDINT;
+	
+	errorCatched: BOOL;
+	errorRaised: BOOL;
+	increaseByValue: UDINT;
+
+	errorCounter: UDINT;
+	errorNames : ARRAY [0..cMax] OF STRING;
+	errorMessages : ARRAY [0..cMax] OF STRING;
+END_VAR
+VAR CONSTANT
+    cMax    : INT := 1000;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="call" Id="{786c2cbe-5d6b-46ec-bdf3-537e82819b3a}">
+      <Declaration><![CDATA[METHOD call : Awaitable
+VAR_INPUT
+	callback: Callback;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[call := THIS^;
+
+IF NOT errorRaised
+	AND callback <> 0
+	THEN
+	
+	callback.execute();
+	
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="catchIf" Id="{25a4749c-003d-485a-bcd3-c44d5041ff62}">
+      <Declaration><![CDATA[METHOD catchIf : Awaitable
+VAR_INPUT
+	error: BOOL;
+	callback: REFERENCE TO AwaitableError;
+	message: STRING(255);
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[catchIf := THIS^;
+
+IF errorRaised
+	THEN
+	RETURN;
+END_IF
+
+THIS^.errorCatched := THIS^.errorCatched OR error;
+
+IF error
+	THEN
+	onError(callback, message, 0);
+END_IF
+
+
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="continueIf" Id="{d30e2228-9054-4343-8666-4a54ca7559ee}">
+      <Declaration><![CDATA[METHOD continueIf : Awaitable
+VAR_INPUT
+	value: BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[continueIf := THIS^;
+
+// Make sure step is a valid pointer
+IF step = 0 
+	OR errorRaised
+	THEN
+	RETURN;
+END_IF
+
+
+IF value AND NOT THIS^.errorCatched
+	THEN
+	
+	step^ := step^ + increaseByValue;
+
+END_IF
+
+
+
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="evalue" Id="{6241a87e-533a-4623-a880-40111779f1ee}">
+      <Declaration><![CDATA[METHOD evalue : Awaitable
+VAR_INPUT
+	value: BOOL;
+	onTrueCallback: Callback;
+	onFalseCallback: REFERENCE TO AwaitableError;
+	message: STRING(255);
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[evalue := THIS^;
+
+// Make sure step is a valid pointer
+IF step = 0 
+	OR errorRaised
+	THEN
+	RETURN;
+END_IF
+
+
+IF value AND NOT THIS^.errorCatched
+	THEN
+	
+	IF onTrueCallback <> 0
+		THEN
+		onTrueCallback.execute();
+	END_IF
+	
+	step^ := step^ + increaseByValue;
+	
+ELSIF NOT value 
+	THEN
+	onError(onFalseCallback, message, errorCatched);
+END_IF
+
+
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="onError" Id="{2c3cdcfe-3a34-4051-874e-ca50a4da7e63}">
+      <Declaration><![CDATA[METHOD PRIVATE onError : PVOID
+VAR_INPUT
+	callback: REFERENCE TO AwaitableError;
+	message: STRING(255);
+	errorRef: REFERENCE TO BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF __ISVALIDREF(errorRef)
+	THEN
+	errorRef := TRUE;
+END_IF
+
+	
+IF __ISVALIDREF(callback)
+	THEN
+	
+	callback.errorMessage := message;
+	errorNames[errorCounter] := callback.getName();
+	errorMessages[errorCounter] := callback.getMessage();
+	errorCounter := errorCounter + 1;
+	oldStep := step^; 
+	step^ := callback.execute();
+	
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="raiseIf" Id="{2e998d0f-01ef-4e26-ac7c-f91b5e39aaaf}">
+      <Declaration><![CDATA[METHOD raiseIf : Awaitable
+VAR_INPUT
+	error: BOOL;
+	callback: REFERENCE TO AwaitableError;
+	message: STRING(255);
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[raiseIf := THIS^;
+
+IF errorRaised
+	THEN
+	RETURN;
+END_IF
+
+IF error 
+	THEN
+	onError(callback, message, errorRaised);
+END_IF
+
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="reset" Id="{f9c1e191-47fe-4cf4-a6df-939c24fcccf6}">
+      <Declaration><![CDATA[METHOD reset : PVOID
+VAR_INPUT
+END_VAR
+
+VAR
+	i: INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[errorCounter := 0;
+FOR i := 0 TO cMAX DO
+	IF errorNames[i] = ''
+		THEN
+		EXIT;
+	END_IF
+    errorNames[i] := '';
+	errorMessages[i] := '';
+END_FOR 
+
+
+errorCatched := FALSE;
+errorRaised := FALSE;
+oldStep := 0;]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="setIncreaseValue" Id="{486e4629-2a04-4991-8f81-a43edd17cbe4}">
+      <Declaration><![CDATA[PROPERTY setIncreaseValue : UDINT]]></Declaration>
+      <Set Name="Set" Id="{b007a068-445b-4984-83a9-112f4a9d34f2}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[increaseByValue := setIncreaseValue;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="setStepPointer" Id="{7bba5888-3f5c-4c1a-b0ea-8945ac6896ed}">
+      <Declaration><![CDATA[PROPERTY PUBLIC setStepPointer : POINTER TO UDINT]]></Declaration>
+      <Set Name="Set" Id="{bc50a8ff-1df7-456f-90d3-3e094d144b56}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[step := setStepPointer;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <LineIds Name="Await">
+      <LineId Id="12" Count="0" />
+    </LineIds>
+    <LineIds Name="Await.call">
+      <LineId Id="13" Count="1" />
+      <LineId Id="6" Count="0" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="9" Count="1" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="8" Count="0" />
+    </LineIds>
+    <LineIds Name="Await.catchIf">
+      <LineId Id="45" Count="0" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="46" Count="1" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="50" Count="0" />
+      <LineId Id="31" Count="2" />
+      <LineId Id="35" Count="1" />
+      <LineId Id="42" Count="2" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="Await.continueIf">
+      <LineId Id="66" Count="1" />
+      <LineId Id="48" Count="1" />
+      <LineId Id="65" Count="0" />
+      <LineId Id="50" Count="3" />
+      <LineId Id="55" Count="9" />
+      <LineId Id="43" Count="0" />
+    </LineIds>
+    <LineIds Name="Await.evalue">
+      <LineId Id="9" Count="8" />
+      <LineId Id="19" Count="2" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="47" Count="0" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="44" Count="0" />
+      <LineId Id="25" Count="2" />
+      <LineId Id="8" Count="0" />
+    </LineIds>
+    <LineIds Name="Await.onError">
+      <LineId Id="22" Count="1" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="7" Count="1" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="9" Count="6" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="Await.raiseIf">
+      <LineId Id="38" Count="0" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="39" Count="3" />
+      <LineId Id="37" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="Await.reset">
+      <LineId Id="5" Count="0" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="12" Count="1" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="14" Count="0" />
+      <LineId Id="8" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="6" Count="0" />
+      <LineId Id="17" Count="1" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="21" Count="0" />
+    </LineIds>
+    <LineIds Name="Await.setIncreaseValue.Set">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="Await.setStepPointer.Set">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

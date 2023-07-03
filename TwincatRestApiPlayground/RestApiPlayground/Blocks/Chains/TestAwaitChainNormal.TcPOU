@@ -1,0 +1,182 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="TestAwaitChainNormal" Id="{a510cb06-81bf-437b-8803-498bf1e19fea}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK TestAwaitChainNormal
+VAR
+	nState: UDINT := 0;
+	await: Await;
+
+	fbClient: FB_IotHttpClient := (
+		sHostName:='localhost',
+		bKeepAlive:=TRUE,
+		tConnectionTimeout:=T#10S,
+		nHostPort:=8000
+	);
+	
+	fbRequest: FB_IotHttpRequest;
+	sEndpoint: STRING := '/hello-world';
+	response: STRING(255);
+
+	fbJson: FB_JsonDomParser;
+	
+	jsonDoc: SJsonValue;
+	jsonMember: SJsonValue;
+	isJsonMemberString: BOOL;
+	
+	RisingEdge: R_TRIG;
+	
+	bSend: BOOL;
+	requestSent: BOOL;
+	cycleCounter: INT := 0;
+	lenResponse: INT := 0;
+	
+	// Awaitable Errors
+	onRequestError: OnRequestError := (errorName:='Request error', onErrorStep:=500);
+	onResponseError: OnRequestError := (errorName:='Response error', onErrorStep:=500);
+	onJsonError: OnJsonError := (errorName:='Json error', onErrorStep:=500);
+	
+	//Callbacks
+	findJsonMemberCallback: FindJsonMember := 
+	(
+		jsonDomParser:=fbJson, 
+		jsonReference:=jsonDoc,
+		memberReference:=jsonMember
+	);
+	
+	getJsonStringCallback: GetJsonString := 
+	(
+		jsonDomParser:=fbJson,
+		bufferReference:=response,
+		memberReference:=jsonMember
+	);
+	
+	isJsonMemberStringCallback: IsJsonMemberString := 
+	(
+		jsonDomParser:=fbJson,
+		memberReference:=jsonMember,
+		isStringReference:=isJsonMemberString
+	);
+	
+END_VAR
+
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[RisingEdge(CLK:= bSend );
+fbClient.Execute();
+
+
+CASE nState OF
+	
+	
+	000: // Check if client is configured before moving on to the next step
+		
+		await.continueIf(fbClient.bConfigured);		
+	
+	
+	010: // Waiting for input to start the request process
+		
+		await.continueIf(RisingEdge.Q);
+	
+	
+	020: // Send the request
+	
+		cycleCounter := 0;
+		
+		requestSent := fbRequest.SendRequest(
+			sUri:=sEndpoint, 
+			fbClient:=fbClient, 
+			eRequestType:=ETcIotHttpRequestType.HTTP_Get, 
+			0, // payload, 
+			0, // payload size  
+			0  // header
+		);
+					
+		await.catchIf(fbRequest.bError,onRequestError, 'An error occured while sending the request')
+			.continueIf(requestSent);
+	
+	030: // Check if request was successful
+	
+		await.catchIf(fbRequest.bError,onRequestError, 'An error occured after sending the request')
+			.continueIf(fbRequest.nStatusCode = 200);
+			
+		cycleCounter := cycleCounter + 1;
+	
+	040: // Get JsonDoc and on success call the findJsonMemberCallback
+
+		jsonDoc := fbRequest.GetJsonDomContent(fbJson);
+		findJsonMemberCallback.memberToFind := 'message';
+		await.evalue(jsonDoc <> 0, findJsonMemberCallback, onJsonError, 'jsonDoc is an invalid pointer');
+
+	050: //	Check if jsonMember is a valid pointer. On success call the isJsonMemberStringCallback
+	
+		await.evalue(jsonMember <> 0, isJsonMemberStringCallback, onJsonError, 'jsonMember is an invalid pointer');
+
+		
+	060: // Check the type of the json response value and on success call the getJsonStringCallback
+		
+		await.evalue(isJsonMemberString, getJsonStringCallback, onJsonError, 'The type of the message response is not String');
+		
+	070: // Check the len of the response
+	
+		await.evalue(len(response) > 0, 0, onResponseError, 'The length of the response is 0');
+		
+	500: // Error step
+
+			
+	
+END_CASE
+]]></ST>
+    </Implementation>
+    <Method Name="FB_init" Id="{602c78fd-7321-4821-a589-e6ae8f6a9170}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[await.setStepPointer := ADR(nState);
+await.setIncreaseValue := 10;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="TestAwaitChainNormal">
+      <LineId Id="10" Count="17" />
+      <LineId Id="92" Count="0" />
+      <LineId Id="302" Count="1" />
+      <LineId Id="83" Count="2" />
+      <LineId Id="99" Count="2" />
+      <LineId Id="89" Count="0" />
+      <LineId Id="71" Count="0" />
+      <LineId Id="91" Count="0" />
+      <LineId Id="39" Count="0" />
+      <LineId Id="97" Count="0" />
+      <LineId Id="76" Count="0" />
+      <LineId Id="80" Count="0" />
+      <LineId Id="98" Count="0" />
+      <LineId Id="94" Count="2" />
+      <LineId Id="81" Count="1" />
+      <LineId Id="120" Count="0" />
+      <LineId Id="122" Count="0" />
+      <LineId Id="121" Count="0" />
+      <LineId Id="198" Count="0" />
+      <LineId Id="126" Count="1" />
+      <LineId Id="129" Count="0" />
+      <LineId Id="309" Count="1" />
+      <LineId Id="139" Count="0" />
+      <LineId Id="131" Count="1" />
+      <LineId Id="140" Count="0" />
+      <LineId Id="323" Count="1" />
+      <LineId Id="145" Count="3" />
+      <LineId Id="40" Count="0" />
+      <LineId Id="78" Count="0" />
+      <LineId Id="77" Count="0" />
+      <LineId Id="73" Count="0" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="TestAwaitChainNormal.FB_init">
+      <LineId Id="8" Count="0" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
