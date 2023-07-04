@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="TestPostLogChain" Id="{157a5f80-8dfd-4678-859e-1462e0d7b71a}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK TestPostLogChain
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	await: Await;
+	step: UDINT; 
+	
+	client: FB_IotHttpClient := (
+		sHostName:='localhost',
+		bKeepAlive:=TRUE,
+		tConnectionTimeout:=T#10S,
+		nHostPort:=8000
+	);
+	
+	request: FB_IotHttpRequest;
+	endpoint: STRING := '/log';
+	
+	fbJson: FB_JsonDomParser;
+	jsonDoc: SJsonValue;
+	
+	json: Json;
+	risingEdge: R_TRIG;
+	send: BOOL;
+	requestOperation: BOOL;
+	
+	logMessages : ARRAY [0..cMax] OF STRING := ['log-entry-1', 'log-entry-2', 'log-entry-3'];
+	
+	// Callbacks
+	onRequestError : OnRequestError:= (errorName:='TestPostLogChain.OnRequestError', onErrorStep:=500);
+END_VAR
+VAR CONSTANT
+	cMax : INT := 100;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[risingEdge(CLK:=send );
+client.Execute();
+
+CASE step OF 
+	
+	000: // Basic init step
+	
+		await.continueIf(client.bConfigured AND risingEdge.Q);
+		
+	010:
+		json.create(logMessages[0]);
+		requestOperation := request.SendRequest(
+			sUri:= '/log', 
+			fbClient:= client, 
+			eRequestType:= ETcIotHttpRequestType.HTTP_POST, 
+			pContent:= ADR(json.payload), 			
+			nContentSize:= len2(ADR(json.payload)), 
+			0
+		);
+		
+		await.evalue(requestOperation, 0, onRequestError, 'Error during request');
+			
+		
+	020:
+	
+		
+		;
+END_CASE]]></ST>
+    </Implementation>
+    <Method Name="FB_init" Id="{de411cd0-4760-4b28-a254-913b98e98a42}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[await.setStepPointer := ADR(step);
+await.setIncreaseValue := 10;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="TestPostLogChain">
+      <LineId Id="111" Count="26" />
+      <LineId Id="13" Count="0" />
+    </LineIds>
+    <LineIds Name="TestPostLogChain.FB_init">
+      <LineId Id="8" Count="0" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

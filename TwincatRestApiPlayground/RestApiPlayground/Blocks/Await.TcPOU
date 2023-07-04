@@ -198,11 +198,11 @@ VAR_INPUT
 END_VAR
 
 VAR
-	i: INT;
+	i: UDINT;
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[errorCounter := 0;
-FOR i := 0 TO cMAX DO
+FOR i := 0 TO THIS^.cMAX DO
 	IF errorNames[i] = ''
 		THEN
 		EXIT;

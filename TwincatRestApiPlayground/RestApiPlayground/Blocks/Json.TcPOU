@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="Json" Id="{c50ea90b-f9f2-4eba-85a8-23aaa103e8e0}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Json
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+	payload: STRING(255);
+END_VAR
+VAR
+  writer: FB_JsonSaxWriter;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="create" Id="{595df800-60b9-4f40-bb41-6806137d1ad6}">
+      <Declaration><![CDATA[METHOD create : STRING(255)
+VAR_INPUT
+	fromString: STRING(255);
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[writer.StartObject();
+writer.AddKey('message');
+writer.AddString(fromString);
+writer.EndObject();
+payload := writer.GetDocument();
+writer.ResetDocument();
+create := payload;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="Json">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="Json.create">
+      <LineId Id="6" Count="4" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="12" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

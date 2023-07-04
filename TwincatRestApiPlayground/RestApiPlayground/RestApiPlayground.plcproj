@@ -41,6 +41,12 @@
     <Compile Include="Blocks\Chains\TestAwaitChainNormal.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Blocks\Chains\TestPostLogChain.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Blocks\Json.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Interfaces\Awaitable.TcIO">
       <SubType>Code</SubType>
     </Compile>
@@ -83,6 +89,10 @@
     <PlaceholderReference Include="Tc2_System">
       <DefaultResolution>Tc2_System, * (Beckhoff Automation GmbH)</DefaultResolution>
       <Namespace>Tc2_System</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_Utilities">
+      <DefaultResolution>Tc2_Utilities, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_Utilities</Namespace>
     </PlaceholderReference>
     <PlaceholderReference Include="Tc3_IotBase">
       <DefaultResolution>Tc3_IotBase, * (Beckhoff Automation GmbH)</DefaultResolution>
