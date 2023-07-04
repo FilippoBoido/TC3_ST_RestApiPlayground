@@ -18,7 +18,7 @@ VAR
 	errorMessages : ARRAY [0..cMax] OF STRING;
 END_VAR
 VAR CONSTANT
-    cMax    : INT := 1000;
+    cMax    : UDINT := 1000;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[]]></ST>
@@ -155,9 +155,13 @@ IF __ISVALIDREF(callback)
 	THEN
 	
 	callback.errorMessage := message;
-	errorNames[errorCounter] := callback.getName();
-	errorMessages[errorCounter] := callback.getMessage();
-	errorCounter := errorCounter + 1;
+	IF errorCounter <= cMax
+		THEN
+		errorNames[errorCounter] := callback.getName();
+		errorMessages[errorCounter] := callback.getMessage();
+		errorCounter := errorCounter + 1;
+	END_IF
+
 	oldStep := step^; 
 	step^ := callback.execute();
 	
@@ -292,7 +296,12 @@ END_VAR
       <LineId Id="19" Count="0" />
       <LineId Id="7" Count="1" />
       <LineId Id="27" Count="0" />
-      <LineId Id="9" Count="6" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="34" Count="1" />
+      <LineId Id="38" Count="1" />
+      <LineId Id="37" Count="0" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="12" Count="3" />
       <LineId Id="5" Count="0" />
     </LineIds>
     <LineIds Name="Await.raiseIf">
