@@ -2,7 +2,8 @@
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
   <POU Name="TestPostLogChain" Id="{157a5f80-8dfd-4678-859e-1462e0d7b71a}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK TestPostLogChain
-VAR_INPUT
+VAR_IN_OUT
+	logBuffer : LogBuffer;
 END_VAR
 VAR_OUTPUT
 END_VAR
@@ -28,10 +29,11 @@ VAR
 	send: BOOL;
 	requestOperation: BOOL;
 	
-	logMessages : ARRAY [0..cMax] OF STRING := ['log-entry-1', 'log-entry-2', 'log-entry-3'];
-	
+	logMessage : STRING(255);
+
 	// Callbacks
 	onRequestError : OnRequestError:= (errorName:='TestPostLogChain.OnRequestError', onErrorStep:=500);
+	resetStepOnSuccess: StepChainResetter := (stepReference:=step);  
 END_VAR
 VAR CONSTANT
 	cMax : INT := 100;
@@ -45,10 +47,11 @@ CASE step OF
 	
 	000: // Basic init step
 	
-		await.continueIf(client.bConfigured AND risingEdge.Q);
+		await.continueIf(client.bConfigured AND logBuffer.pop(logMessage));
 		
 	010:
-		json.create(logMessages[0]);
+		
+		json.create(logMessage);
 		requestOperation := request.SendRequest(
 			sUri:= '/log', 
 			fbClient:= client, 
@@ -58,13 +61,9 @@ CASE step OF
 			0
 		);
 		
-		await.evalue(requestOperation, 0, onRequestError, 'Error during request');
-			
+		await.evalue(requestOperation, resetStepOnSuccess, onRequestError, 'Error during request');
+
 		
-	020:
-	
-		
-		;
 END_CASE]]></ST>
     </Implementation>
     <Method Name="FB_init" Id="{de411cd0-4760-4b28-a254-913b98e98a42}">
@@ -80,7 +79,11 @@ await.setIncreaseValue := 10;]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="TestPostLogChain">
-      <LineId Id="111" Count="26" />
+      <LineId Id="111" Count="9" />
+      <LineId Id="173" Count="0" />
+      <LineId Id="121" Count="10" />
+      <LineId Id="175" Count="0" />
+      <LineId Id="137" Count="0" />
       <LineId Id="13" Count="0" />
     </LineIds>
     <LineIds Name="TestPostLogChain.FB_init">

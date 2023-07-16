@@ -120,12 +120,12 @@ END_IF
 IF value AND NOT THIS^.errorCatched
 	THEN
 	
+	step^ := step^ + increaseByValue;
+	
 	IF onTrueCallback <> 0
-		THEN
+	THEN
 		onTrueCallback.execute();
 	END_IF
-	
-	step^ := step^ + increaseByValue;
 	
 ELSIF NOT value 
 	THEN
@@ -274,14 +274,12 @@ END_VAR
     <LineIds Name="Await.evalue">
       <LineId Id="9" Count="8" />
       <LineId Id="19" Count="2" />
-      <LineId Id="49" Count="0" />
-      <LineId Id="22" Count="0" />
-      <LineId Id="28" Count="0" />
-      <LineId Id="30" Count="0" />
-      <LineId Id="29" Count="0" />
       <LineId Id="48" Count="0" />
       <LineId Id="23" Count="0" />
+      <LineId Id="61" Count="0" />
+      <LineId Id="57" Count="2" />
       <LineId Id="47" Count="0" />
+      <LineId Id="60" Count="0" />
       <LineId Id="24" Count="0" />
       <LineId Id="32" Count="0" />
       <LineId Id="44" Count="0" />

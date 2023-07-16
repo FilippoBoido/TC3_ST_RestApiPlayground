@@ -2,7 +2,7 @@
 <TcSmProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4024.35">
 	<Project ProjectGUID="{BC1777BC-0F22-40A6-B396-3B91B596B0BB}" Target64Bit="true" Utf8Encoding="true" ShowHideConfigurations="#x106">
 		<System>
-			<Settings DontCheckTarget="192.168.2.114.1.1"/>
+			<Settings MaxCpus="4" DontCheckTarget="192.168.2.114.1.1"/>
 			<Tasks>
 				<Task Id="3" Priority="20" CycleTime="100000" AmsPort="350" AdtTasks="true">
 					<Name>PlcTask</Name>
@@ -11,7 +11,7 @@
 		</System>
 		<Plc>
 			<Project GUID="{056E8F9E-8EB2-4959-9665-92EBD78F897E}" Name="RestApiPlayground" PrjFilePath="RestApiPlayground\RestApiPlayground.plcproj" TmcFilePath="RestApiPlayground\RestApiPlayground.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="RestApiPlayground\RestApiPlayground.tmc" TmcHash="{1435517B-251E-29CB-F7FD-AE8B7A3E5497}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="RestApiPlayground\RestApiPlayground.tmc" TmcHash="{A3EABC91-A29B-28E2-9020-F8196C4A02D4}">
 					<Name>RestApiPlayground Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Contexts>

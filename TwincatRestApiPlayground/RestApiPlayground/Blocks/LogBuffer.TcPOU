@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="LogBuffer" Id="{24356b2b-138f-49d1-a985-3f05ee70eaf8}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK LogBuffer
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	logMessages : ARRAY [0..cMax] OF STRING(255);
+	counter: INT := 0;
+END_VAR
+VAR CONSTANT
+	cMax: INT := 100;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="append" Id="{b2f9d90a-ce7c-42ef-baa1-b8377d686449}">
+      <Declaration><![CDATA[METHOD append : BOOL
+VAR_INPUT
+	message: STRING(255);
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF counter <= cMax
+	THEN
+	
+	logMessages[counter] := message;
+	counter := counter + 1;
+	append := TRUE;
+ELSE
+	append := FALSE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="logAvailable" Id="{5b1edc72-2d47-4151-82d5-fa9d4553d846}">
+      <Declaration><![CDATA[PROPERTY logAvailable : Bool]]></Declaration>
+      <Get Name="Get" Id="{e32d3a85-798f-45fa-86f6-5158c542ea85}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[logAvailable := (counter > 0);]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="pop" Id="{deb38650-8802-48cf-b795-a6ffaace8482}">
+      <Declaration><![CDATA[METHOD pop : BOOL
+VAR_IN_OUT
+	message : STRING(255);
+END_VAR
+VAR
+	popMessage: INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF counter = 0 AND logMessages[counter] = ''
+	THEN
+	
+	pop := FALSE;
+	
+ELSIF counter > 0
+	THEN
+	
+	pop := TRUE;
+	
+	popMessage := counter - 1;
+	message := logMessages[popMessage];
+	logMessages[popMessage] := '';
+	counter := popMessage;
+	
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="LogBuffer">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="LogBuffer.append">
+      <LineId Id="5" Count="1" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="8" Count="0" />
+      <LineId Id="11" Count="3" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+    <LineIds Name="LogBuffer.logAvailable.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="LogBuffer.pop">
+      <LineId Id="5" Count="0" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="9" Count="1" />
+      <LineId Id="18" Count="0" />
+      <LineId Id="11" Count="3" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="15" Count="1" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="8" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

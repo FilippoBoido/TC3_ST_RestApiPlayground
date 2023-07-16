@@ -35,6 +35,9 @@
     <Compile Include="Blocks\Callbacks\IsJsonMemberString.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Blocks\Callbacks\StepChainResetter.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Blocks\Chains\TestAwaitChainFast.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -45,6 +48,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Blocks\Json.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Blocks\LogBuffer.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Interfaces\Awaitable.TcIO">
